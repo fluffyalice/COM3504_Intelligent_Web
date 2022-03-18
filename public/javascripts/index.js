@@ -1,7 +1,7 @@
 let name = null;
 let roomNo = null;
-let socket=null;
-
+let socket = null;
+// let chat = io.connect('/chat');
 
 /**
  * called by <body onload>
@@ -12,8 +12,47 @@ function init() {
     // it sets up the interface so that userId and room are selected
     document.getElementById('initial_form').style.display = 'block';
     document.getElementById('chat_interface').style.display = 'none';
+    // //check for support
+    if ('indexedDB' in window) {
+        initDatabase();
+    }
+    else {
+        console.log('This browser doesn\'t support IndexedDB');
+    }
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker
+            .register('./service-worker.js')
+            .then(function() { console.log('Service Worker Registered'); });
+    }
 
     //@todo here is where you should initialise the socket operations as described in teh lectures (room joining, chat message receipt etc.)
+    socket = io.connect('/app');
+    initChatSocket();
+}
+
+/**
+ * it initialises the socket for /chat
+ */
+
+function initChatSocket() {
+    // called when someone joins the room. If it is someone else it notifies the joining of the room
+    socket.on('joined', function(room, userId) {
+        console.log(room, userId)
+        if (userId === name) {
+            // it enters the chat
+            hideLoginInterface(room, userId);
+        } else {
+            // notifies that someone has joined the room
+            writeOnHistory('<b>' + userId + '</b>' + ' joined room ' + room);
+        }
+    });
+    // called when a message is received
+    socket.on('chat', function(room, userId, chatText) {
+        let who = userId
+        if (userId === name) who = 'Me';
+        writeOnHistory('<b>' + who + ':</b> ' + chatText);
+    });
+
 }
 
 /**
@@ -33,6 +72,8 @@ function generateRoom() {
 function sendChatText() {
     let chatText = document.getElementById('chat_input').value;
     // @todo send the chat message
+    console.log('send mesage ' + roomNo + '  with name' + name + ' ' + chatText)
+    socket.emit('chat', roomNo, name, chatText);
 }
 
 /**
@@ -42,9 +83,11 @@ function sendChatText() {
 function connectToRoom() {
     roomNo = document.getElementById('roomNo').value;
     name = document.getElementById('name').value;
-    let imageUrl= document.getElementById('image_url').value;
+    let imageUrl = document.getElementById('image_url').value;
     if (!name) name = 'Unknown-' + Math.random();
     //@todo join the room
+    console.log('create or join', roomNo, name)
+    socket.emit('create or join', roomNo, name);
     initCanvas(socket, imageUrl);
     hideLoginInterface(roomNo, name);
 }
@@ -55,7 +98,7 @@ function connectToRoom() {
  * @param text: the text to append
  */
 function writeOnHistory(text) {
-    if (text==='') return;
+    if (text === '') return;
     let history = document.getElementById('history');
     let paragraph = document.createElement('p');
     paragraph.innerHTML = text;
@@ -73,7 +116,24 @@ function writeOnHistory(text) {
 function hideLoginInterface(room, userId) {
     document.getElementById('initial_form').style.display = 'none';
     document.getElementById('chat_interface').style.display = 'block';
-    document.getElementById('who_you_are').innerHTML= userId;
-    document.getElementById('in_room').innerHTML= ' '+room;
+    document.getElementById('who_you_are').innerHTML = userId;
+    document.getElementById('in_room').innerHTML = ' ' + room;
+}
+
+/**
+ * it sends an Ajax query using JQuery
+ * @param url the url to send to
+ * @param data the data to send (e.g. a Javascript structure)
+ */
+function sendAjaxQuery(url, data, success, error) {
+    $.ajax({
+        url: url,
+        data: JSON.stringify(data),
+        contentType: 'application/json',
+        dataType: 'json',
+        type: 'POST',
+        success,
+        error
+    });
 }
 
