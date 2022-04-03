@@ -4,8 +4,8 @@ import * as idb from './idb/index.js';
 
 
 /** class WeatherForecast{
- *  constructor (location, date, forecast, temperature, wind, precipitations) {
- *    this.location= location;
+ *  constructor (title, date, forecast, temperature, wind, precipitations) {
+ *    this.title= title;
  *    this.date= date,
  *    this.forecast=forecast;
  *    this.temperature= temperature;
@@ -16,162 +16,192 @@ import * as idb from './idb/index.js';
  */
 let db;
 
-const DB_NAME= 'app_db';
-const FORECAST_STORE_NAME= 'store_forecasts';
+const DB_NAME = 'app_db';
+const STORE_NAME = 'story';
+const ANNOTATION = 'annotation'
 
 /**
  * it inits the database
  */
-async function initDatabase(){
+async function initDatabase() {
     if (!db) {
         db = await idb.openDB(DB_NAME, 2, {
             upgrade(upgradeDb, oldVersion, newVersion) {
-                if (!upgradeDb.objectStoreNames.contains(FORECAST_STORE_NAME)) {
-                    let forecastDB = upgradeDb.createObjectStore(FORECAST_STORE_NAME, {
+                if (!upgradeDb.objectStoreNames.contains(STORE_NAME)) {
+                    let forecastDB = upgradeDb.createObjectStore(STORE_NAME, {
+                        keyPath: '_id',
+                    });
+                    forecastDB.createIndex('saved', 'saved', { unique: false, multiEntry: true });
+                }
+                if (!upgradeDb.objectStoreNames.contains(ANNOTATION)) {
+                    let forecastDB = upgradeDb.createObjectStore(ANNOTATION, {
                         keyPath: 'id',
                         autoIncrement: true
                     });
-                    forecastDB.createIndex('location', 'location', {unique: false, multiEntry: true});
+                    forecastDB.createIndex('_id', '_id', { unique: false, multiEntry: true });
                 }
             }
         });
+
         console.log('db created');
     }
 }
-window.initDatabase= initDatabase;
+window.initDatabase = initDatabase;
 
 /**
- * it saves the forecasts for a city in localStorage
- * @param city
- * @param forecastObject
+ * it saves the story for a title in localStorage
+ * @param id
+ * @param storyObject
  */
-async function storeCachedData(city, forecastObject) {
-    console.log('inserting: '+JSON.stringify(forecastObject));
-    if (!db)
-        await initDatabase();
-    if (db) {
-        try{
-            let tx = await db.transaction(FORECAST_STORE_NAME, 'readwrite');
-            let store = await tx.objectStore(FORECAST_STORE_NAME);
-            await store.put(forecastObject);
-            await  tx.complete;
-            console.log('added item to the store! '+ JSON.stringify(forecastObject));
-        } catch(error) {
-            localStorage.setItem(city, JSON.stringify(forecastObject));
-        };
-    }
-    else localStorage.setItem(city, JSON.stringify(forecastObject));
-}
-
-window.storeCachedData=storeCachedData;
-
-/**
- * it retrieves the story data for a city from the database
- * @param city
- * @param date
- * @returns {*}
- */
-async function getCachedData(city, date) {
+async function storeCachedData(id, storyObject) {
+    console.log('inserting: ' + JSON.stringify(storyObject));
     if (!db)
         await initDatabase();
     if (db) {
         try {
-            console.log('fetching: ' + city);
-            let tx = await db.transaction(FORECAST_STORE_NAME, 'readonly');
-            let store = await tx.objectStore(FORECAST_STORE_NAME);
-            let index = await store.index('location');
-            let readingsList = await index.getAll(IDBKeyRange.only(city));
+            let tx = await db.transaction(STORE_NAME, 'readwrite');
+            let store = await tx.objectStore(STORE_NAME);
+            await store.put(storyObject);
             await tx.complete;
-            let finalResults=[];
-            if (readingsList && readingsList.length > 0) {
-                let max;
-                for (let elem of readingsList)
-                    if (!max || elem.date > max.date)
-                        max = elem;
-                if (max)
-                    finalResults.push(max);
-                return finalResults;
-            } else {
-                const value = localStorage.getItem(city);
-                if (value == null)
-                    return finalResults;
-                else finalResults.push(value);
-                return finalResults;
-            }
+            console.log('added item to the store! ' + JSON.stringify(storyObject));
+        } catch (error) {
+            localStorage.setItem(id, JSON.stringify(storyObject));
+        };
+    }
+    else localStorage.setItem(id, JSON.stringify(storyObject));
+}
+
+window.storeCachedData = storeCachedData;
+
+
+/**
+ * it retrieves the story data for a title from the database
+ * @param id
+ * @returns {*}
+ */
+async function getCachedData(id) {
+    if (!db)
+        await initDatabase();
+    if (db) {
+        try {
+            console.log('fetching: ' + id);
+            let tx = await db.transaction(STORE_NAME, 'readonly');
+            let store = await tx.objectStore(STORE_NAME);
+            // let index = await store.index('_id');
+            let readingsList = await store.get(id);
+            await tx.complete;
+            return readingsList;
         } catch (error) {
             console.log(error);
         }
     } else {
-        const value = localStorage.getItem(city);
-        let finalResults=[];
-        if (value == null)
+        let arr = localStorage.getItem("story");
+        let finalResults = [];
+
+        if (arr == null)
             return finalResults;
-        else finalResults.push(value);
+        arr = JSON.parse('arr');
+        for (let s of arr) {
+            if (s.title === title)
+                finalResults.push(value);
+        }
+
         return finalResults;
     }
 }
-window.getCachedData= getCachedData;
+window.getCachedData = getCachedData;
 
 
 /**
- * given the server data, it returns the value of the field precipitations
- * @param dataR the data returned by the server
+ * it retrieves the all story data from the database
  * @returns {*}
  */
-function getPrecipitations(dataR) {
-    if (dataR.precipitations == null && dataR.precipitations === undefined)
-        return "unavailable";
-    return dataR.precipitations
-}
-window.getPrecipitations=getPrecipitations;
+async function getAllCachedData() {
+    if (!db)
+        await initDatabase();
+    if (db) {
+        try {
+            console.log('fetching: ' + title);
+            let tx = await db.transaction(STORE_NAME, 'readonly');
+            let store = await tx.objectStore(STORE_NAME);
+            let readingsList = await store.getAll();
+            await tx.complete;
+            return readingsList;
+        } catch (error) {
+            console.log(error);
+        }
+    } else {
+        const arr = localStorage.getItem('story');
+        let finalResults = [];
+        if (arr == null)
+            return finalResults;
+        else {
+            finalResults = JSON.parse(arr)
+            return finalResults;
+        }
 
-/**
- * given the server data, it returns the value of the field wind
- * @param dataR the data returned by the server
- * @returns {*}
- */
-function getWind(dataR) {
-    if (dataR.wind == null && dataR.wind === undefined)
-        return "unavailable";
-    else return dataR.wind;
-}
-window.getWind=getWind;
-
-/**
- * given the server data, it returns the value of the field temperature
- * @param dataR the data returned by the server
- * @returns {*}
- */
-function getTemperature(dataR) {
-    if (dataR.temperature == null && dataR.temperature === undefined)
-        return "unavailable";
-    else return dataR.temperature;
-}
-window.getTemperature=getTemperature;
-
-
-/**
- * the server returns the forecast as a n integer. Here we find out the
- * string so to display it to the user
- * @param forecast
- * @returns {string}
- */
-function getForecast(forecast) {
-    if (forecast == null && forecast === undefined)
-        return "unavailable";
-    switch (forecast) {
-        case CLOUDY:
-            return 'Cloudy';
-        case CLEAR:
-            return 'Clear';
-        case RAINY:
-            return 'Rainy';
-        case OVERCAST:
-            return 'Overcast';
-        case SNOWY:
-            return 'Snowy';
     }
 }
-window.getForecast=getForecast;
+window.getAllCachedData = getAllCachedData;
+
+
+/**
+ * it saves the Annotation to indexedb
+ * @param id
+ * @param annotationObject
+ */
+async function storeAnnotationData(id, annotationObject) {
+    if (!db)
+        await initDatabase();
+    if (db) {
+        try {
+            let tx = await db.transaction(ANNOTATION, 'readwrite');
+            let store = await tx.objectStore(ANNOTATION);
+            await store.put(annotationObject);
+            await tx.complete;
+        } catch (error) {
+            console.log(error)
+            localStorage.setItem(id, JSON.stringify(annotationObject));
+        };
+    }
+    else localStorage.setItem(id, JSON.stringify(annotationObject));
+}
+
+window.storeAnnotationData = storeAnnotationData;
+
+
+/**
+ * it retrieves the all Annotation data from the database with sepecific id
+ * @returns {*}
+ */
+async function getAnnotationData(id) {
+    if (!db)
+        await initDatabase();
+    if (db) {
+        try {
+            console.log('fetching: ' + id);
+            let tx = await db.transaction(ANNOTATION, 'readonly');
+            let store = await tx.objectStore(ANNOTATION);
+            let index = store.index('_id')
+            let readingsList = await index.getAll(IDBKeyRange.only(id));
+            await tx.complete;
+            return readingsList;
+        } catch (error) {
+            console.log(error);
+        }
+    } else {
+        const arr = localStorage.getItem('story');
+        let finalResults = [];
+        if (arr == null)
+            return finalResults;
+        else {
+            finalResults = JSON.parse(arr)
+            return finalResults;
+        }
+
+    }
+}
+window.getAnnotationData = getAnnotationData;
+
 
 
