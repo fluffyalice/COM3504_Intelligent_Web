@@ -19,11 +19,15 @@ let filesToCache = [
     '/',
     '/javascripts/index.js',
     '/stylesheets/style.css',
-    'https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js',
     '/javascripts/database.js',
     '/javascripts/idb/index.js',
     '/socket.io/socket.io.js',
     '/javascripts/canvas.js',
+    '/javascripts/jquery.min.js',
+    '/stylesheets/bootstrap.css',
+    '/javascripts/bootstrap.js',
+    'https://www.gstatic.com/knowledge/kgsearch/widget/1.0/widget.min.js',
+    'https://www.gstatic.com/knowledge/kgsearch/widget/1.0/widget.min.css'
 ];
 
 
@@ -84,14 +88,11 @@ self.addEventListener('fetch', function(e) {
     console.log('[Service Worker] Fetch', e.request.url);
     let dataUrl = '/api';
     //if the request is '/weather_data', post to the server - do nit try to cache it
-    if (e.request.url.indexOf(dataUrl) > -1) {
-        /*
-         * When the request URL contains dataUrl, the app is asking for fresh
-         * weather data. In this case, the service worker always goes to the
-         * network and then caches the response. This is called the "Cache then
-         * network" strategy:
-         * https://jakearchibald.com/2014/offline-cookbook/#cache-then-network
-         */
+    if (e.request.url.indexOf(dataUrl) > -1 || e.request.url.indexOf("socket.io/?EIO=") > -1) {
+
+        if (e.request.url.indexOf("socket.io/?EIO=")) {
+            return;
+        }
         return fetch(e.request)
             .then((response) => {
                 // note: it the network is down, response will contain the error
@@ -107,28 +108,49 @@ self.addEventListener('fetch', function(e) {
          * "Cache, falling back to the network" offline strategy:
          * https://jakearchibald.com/2014/offline-cookbook/#cache-falling-back-to-network
          */
-        e.respondWith(
-            caches.match(e.request)
-                .then(function(response) {
-                    return response
-                        || fetch(e.request)
-                            .then(function(response) {
-                                // note if network error happens, fetch does not return
-                                // an error. it just returns response not ok
-                                // https://www.tjvantoll.com/2015/09/13/fetch-and-errors/
-                                if (!response.ok) {
-                                    console.log("error: " + response.error());
-                                }
-                            })
-                            .catch(function(err) {
-                                console.log("error: " + err);
-                                return err
-                            })
-                })
-                .catch(function(err) {
-                    console.log("error: " + err);
-                    return err
-                })
-        );
+        // if (e.request.destination === 'image') {
+        // Open the cache
+        e.respondWith(caches.open(cacheName).then((cache) => {
+            // Respond with the image from the cache or from the network
+            return cache.match(e.request).then((cachedResponse) => {
+                return cachedResponse || fetch(e.request.url).then((fetchedResponse) => {
+                    // Add the network response to the cache for future visits.
+                    // Note: we need to make a copy of the response to save it in
+                    // the cache and use the original as the request response.
+                    cache.put(e.request, fetchedResponse.clone());
+
+                    // Return the network response
+                    return fetchedResponse;
+                });
+            }).catch(function(err) {
+                console.log("error: " + err);
+                return err
+            });
+        }));
+        // }
+        // e.respondWith(
+        //     caches.match(e.request)
+        //         .then(function(response) {
+
+        //             return response
+        //                 || fetch(e.request)
+        //                     .then(function(response) {
+        //                         // note if network error happens, fetch does not return
+        //                         // an error. it just returns response not ok
+        //                         // https://www.tjvantoll.com/2015/09/13/fetch-and-errors/
+        //                         if (!response.ok) {
+        //                             console.log("error: " + response.error());
+        //                         }
+        //                     })
+        //                     .catch(function(err) {
+        //                         console.log("error: " + err);
+        //                         return err
+        //                     })
+        //         })
+        //         .catch(function(err) {
+        //             console.log("error: " + err);
+        //             return err
+        //         })
+        // );
     }
 });
