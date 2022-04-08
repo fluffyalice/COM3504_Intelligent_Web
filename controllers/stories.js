@@ -7,9 +7,9 @@ exports.getAllStories = async function(req, res) {
 
 
 exports.saveStories = function(req, res) {
-    const { photo, text, name, date } = req.body;
+    const { photo, text, title, date } = req.body;
     let story = new Story({
-        photo, text, name, date
+        photo, text, title, date
     });
 
     story.save()
