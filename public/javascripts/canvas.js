@@ -23,6 +23,7 @@ function initCanvas(sckt, imageUrl) {
 
     img.src = imageUrl;
 
+    let buffer = []
     // event on the canvas when the mouse is on it
     canvas.on('mousemove mousedown mouseup mouseout', function(e) {
         prevX = currX;
@@ -34,6 +35,8 @@ function initCanvas(sckt, imageUrl) {
         }
         if (e.type === 'mouseup' || e.type === 'mouseout') {
             flag = false;
+            storeAnnotationData(roomNo, [...buffer])
+            buffer = []
         }
         // if the flag is up, the movement of the mouse draws on the canvas
         if (e.type === 'mousemove') {
@@ -43,7 +46,8 @@ function initCanvas(sckt, imageUrl) {
                 // room, userId, canvas.width, canvas.height, prevX, prevY, currX, currY, color, thickness
                 let data = { userId, canvasWidth: canvas.width, canvasHeight: canvas.height, x1: prevX, y1: prevY, x2: currX, y2: currY, color, thickness }
                 socket.emit('draw', roomNo, data)
-                storeAnnotationData(roomNo, { _id: roomNo, ...data })
+                // storeAnnotationData(roomNo, { _id: roomNo, ...data })
+                buffer.push({ _id: roomNo, ...data })
             }
         }
     });
@@ -73,6 +77,9 @@ function initCanvas(sckt, imageUrl) {
         const { canvasWidth, canvasHeight, x1, y1, x2, y2, color, thickness } = data;
         drawOnCanvas(ctx, canvasWidth, canvasHeight, x1, y1, x2, y2, color, thickness)
         storeAnnotationData(roomNo, { _id: roomNo, ...data })
+        console.log('draw')
+        // if (!flag)
+        buffer.push({ _id: roomNo, ...data })
     });
 
     // socket.on('clear', () => {
@@ -86,13 +93,12 @@ function initCanvas(sckt, imageUrl) {
     img.addEventListener('load', () => {
         // it takes time before the image size is computed and made available
         // here we wait until the height is set, then we resize the canvas based on the size of the image
-        let poll = setInterval(function() {
+        let poll = setInterval(async function() {
             if (img.naturalHeight && img.clientWidth) {
                 clearInterval(poll);
                 // resize the canvas
                 let ratioX = 1;
                 let ratioY = 1;
-                console.log(img.clientWidth, img.clientHeight)
                 // if the screen is smaller than the img size we have to reduce the image to fit
                 if (img.clientWidth > window.innerWidth)
                     ratioX = window.innerWidth / img.clientWidth;
@@ -103,10 +109,9 @@ function initCanvas(sckt, imageUrl) {
                 cvx.width = canvas.width = img.clientWidth * ratio;
                 cvx.height = canvas.height = img.clientHeight * ratio;
                 // draw the image onto the canvas
-                drawImageScaled(img, cvx, ctx);
+                await drawImageScaled(img, cvx, ctx);
                 getAnnotationData(roomNo)
                     .then(data => {
-                        // console.log(data)
                         for (let annotation of data) {
                             const { canvasWidth, canvasHeight, x1, y1, x2, y2, color, thickness } = annotation;
                             drawOnCanvas(ctx, canvasWidth, canvasHeight, x1, y1, x2, y2, color, thickness)
