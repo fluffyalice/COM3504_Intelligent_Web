@@ -63,7 +63,7 @@ async function storeCachedData(id, storyObject) {
             let store = await tx.objectStore(STORE_NAME);
             await store.put(storyObject);
             await tx.complete;
-            console.log('added item to the store! ' + JSON.stringify(storyObject));
+            console.log('added item to the store! ' + storyObject._id);
         } catch (error) {
             localStorage.setItem(id, JSON.stringify(storyObject));
         };
@@ -150,18 +150,20 @@ window.getAllCachedData = getAllCachedData;
  * @param id
  * @param annotationObject
  */
-async function storeAnnotationData(id, annotationObject) {
+async function storeAnnotationData(id, buffer) {
     if (!db)
         await initDatabase();
     if (db) {
         try {
             let tx = await db.transaction(ANNOTATION, 'readwrite');
             let store = await tx.objectStore(ANNOTATION);
-            await store.put(annotationObject);
+            for (let i = 0; i < buffer.length; i++) {
+                await store.put(buffer[i]);
+            }
             await tx.complete;
         } catch (error) {
             console.log(error)
-            localStorage.setItem(id, JSON.stringify(annotationObject));
+            // localStorage.setItem(id, JSON.stringify(annotationObject));
         };
     }
     else localStorage.setItem(id, JSON.stringify(annotationObject));
