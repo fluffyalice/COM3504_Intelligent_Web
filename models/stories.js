@@ -4,9 +4,10 @@ const Schema = mongoose.Schema;
 
 const Story = new Schema(
     {
-        photo: { type: String, required: true },
-        text: { type: String, required: true },
+        image: { type: String, required: true },
+        description: { type: String, required: true },
         title: { type: String, required: true, },
+        author: { type: String, required: true, },
         date: { type: Date, required: true, }
     }
 );
