@@ -1,10 +1,17 @@
 let name = null;
 let roomNo = null;
 let socket = null;
+let selectedStory = null;
 const service_url = 'https://kgsearch.googleapis.com/v1/entities:search';
 const apiKey = 'AIzaSyAG7w627q-djB4gTTahssufwNOImRqdYKM';
 // let chat = io.connect('/chat');
 
+var saveStoryModal = new bootstrap.Modal(document.getElementById('newStory'), {
+    keyboard: false
+})
+var joinRoomModal = new bootstrap.Modal(document.getElementById('joinRoom'), {
+    keyboard: false
+})
 /**
  * called by <body onload>
  * it initialises the interface and the expected socket messages
@@ -62,6 +69,41 @@ function initChatSocket() {
 
 }
 
+function showNewStoryModal() {
+    saveStoryModal.show();
+}
+
+function showJoinRoomModal(id) {
+    selectedStory = id;
+    joinRoomModal.show();
+}
+/**
+ * 
+ */
+function saveStories() {
+    let image = $('#upload').attr('src')
+    let title = $('#title').val()
+    let description = $('#description').val()
+    let author = $('#author').val()
+    let date = $('#date').val()
+    sendAjaxQuery('/api/stories', {
+        image,
+        title,
+        description,
+        author,
+        date
+    }, (data) => {
+        // hide the modal
+        saveStoryModal.hide()
+        // add the data to ui
+        addToResults(data)
+        // save the new story in the cache
+        storeCachedData('story', { ...data, saved: 1 })
+    }, (err) => {
+        console.log(err)
+    })
+}
+
 /**
  * called to generate a random room number
  * This is a simplification. A real world implementation would ask the server to generate a unique room number
@@ -87,19 +129,26 @@ function sendChatText() {
  * used to connect to a room. It gets the user name and room number from the
  * interface
  */
-function connectToRoom() {
+async function connectToRoom() {
+
+    let story = await getCachedData(selectedStory)
+    if (!story) return
+    joinRoomModal.hide()
     roomNo = document.getElementById('roomNo').value;
     name = document.getElementById('name').value;
-    let imageUrl = document.getElementById('image_url').value;
-    
+    let imageUrl = story.image
+    roomNo = selectedStory + '-' + roomNo
     if (!name) name = 'Unknown-' + Math.random();
     //@todo join the room
-    console.log('create or join', roomNo, name)
     socket.emit('create or join', roomNo, name);
+
+    // update story detail in chat room
+    document.getElementById('story-title').textContent = story.title;
+    document.getElementById('story-author').textContent = story.author;
+    document.getElementById('story-description').textContent = story.description;
 
     initCanvas(socket, imageUrl);
     hideLoginInterface(roomNo, name);
-
 }
 
 /**
@@ -127,7 +176,7 @@ function hideLoginInterface(room, userId) {
     // document.getElementById('initial_form').style.display = 'none';
     // document.getElementById('chat_interface').style.display = 'block';
     document.getElementById('who_you_are').innerHTML = userId;
-    document.getElementById('in_room').innerHTML = ' ' + room;
+    document.getElementById('in_room').innerHTML = ' ' + room.split('-')[1];
     changePage('chat_interface')
 }
 
@@ -168,12 +217,10 @@ async function loadStoryData(forceReload) {
                     for (let story of stories) {
                         addToResults(story)
                     }
-
                 })
             }
         });
     }
-
 }
 
 
@@ -225,21 +272,22 @@ function hideOfflineWarning() {
  */
 function addToResults(dataR) {
     if (document.getElementById('stories') != null) {
-        const row = document.createElement('div');
+        const col = document.createElement('div');
         // appending a new row
-        document.getElementById('stories').appendChild(row);
+        document.getElementById('stories').appendChild(col);
         // formatting the row by applying css classes
-        row.classList.add('card');
-        row.classList.add('my_card');
-        row.classList.add('bg-faded');
+        col.classList.add('col-lg-3');
+        col.classList.add('mb-2');
         // the following is far from ideal. we should really create divs using javascript
         // rather than assigning innerHTML
-        row.innerHTML = "<div class='card-block'>" +
-            "<div class='row'>" +
-            "<div class='col-sm'>" + dataR.title + "</div>" +
-            "<div class='col-sm'>" + dataR.text + "</div>" +
-            "<div class='col-sm'>" + dataR.date + "</div>" +
-            "<div class='col-sm'></div></div></div>";
+        col.innerHTML = `<div class="card">
+            <img src="${dataR.image}" class="card-img-top" alt="...">
+            <div class="card-body">
+                <h5 class="card-title">${dataR.title}</h5>
+                <p class="card-text">${dataR.description}</p>
+                <button onclick="showJoinRoomModal('${dataR._id}')" class="btn btn-primary">Join</button>
+            </div>
+        </div>`;
     }
 }
 
@@ -257,8 +305,6 @@ function toDataURL() {
     xhr.open('GET', url);
     xhr.responseType = 'blob';
     xhr.send();
-
-
 }
 
 function encodeImageFileAsURL(element) {
@@ -290,17 +336,8 @@ function widgetInit() {
             'selectHandler': selectItem,
         }
         KGSearchWidget(apiKey, document.getElementById("myInput"), config);
-        // document.getElementById('typeSet').innerHTML = 'of type: ' + type;
-        // document.getElementById('widget').style.display = 'block';
-        // document.getElementById('typeForm').style.display = 'none';
+
     }
-    // else {
-    //     alert('Set the type please');
-    //     // document.getElementById('widget').style.display = 'none';
-    //     // document.getElementById('resultPanel').style.display = 'none';
-    //     document.getElementById('typeSet').innerHTML = '';
-    //     document.getElementById('typeForm').style.display = 'block';
-    // }
 }
 
 /**
@@ -309,12 +346,6 @@ function widgetInit() {
  */
 function selectItem(event) {
     let row = event.row;
-    // document.getElementById('resultImage').src= row.json.image.url;
-    // document.getElementById('resultId').innerText = 'id: ' + row.id;
-    // document.getElementById('resultName').innerText = row.name;
-    // document.getElementById('resultDescription').innerText = row.rc;
-    // document.getElementById("resultUrl").href = row.qc;
-    // document.getElementById('resultPanel').style.display = 'block';
     $('#annotations').append(`
     <div class='col-md-4' >
         <div class="resultPanel h-100 m-1">
@@ -352,16 +383,18 @@ function queryMainEntity(id, type) {
     });
 }
 
+
 function changePage(id) {
-    console.log(id)
+    // clearn the stories div
+    document.getElementById('history').innerHTML = ''
     document.getElementById('image').classList.remove('hidden');
     document.getElementById('chat_interface').classList.add('hidden');
-    document.getElementById('initial_form').classList.add('hidden');
+    // document.getElementById('initial_form').classList.add('hidden');
     document.getElementById('home').classList.add('hidden');
     // set the image visible for canvas render
-   
+
     // document.getElementById('image').src = ""
-    
+
     document.getElementById(id).classList.remove('hidden');
 }
 
