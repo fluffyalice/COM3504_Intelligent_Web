@@ -26,8 +26,8 @@ let filesToCache = [
     '/javascripts/jquery.min.js',
     '/stylesheets/bootstrap.css',
     '/javascripts/bootstrap.js',
-    'https://www.gstatic.com/knowledge/kgsearch/widget/1.0/widget.min.js',
-    'https://www.gstatic.com/knowledge/kgsearch/widget/1.0/widget.min.css'
+    // 'https://www.gstatic.com/knowledge/kgsearch/widget/1.0/widget.min.js',
+    // 'https://www.gstatic.com/knowledge/kgsearch/widget/1.0/widget.min.css'
 ];
 
 
@@ -88,9 +88,12 @@ self.addEventListener('fetch', function(e) {
     console.log('[Service Worker] Fetch', e.request.url);
     let dataUrl = '/api';
     //if the request is '/weather_data', post to the server - do nit try to cache it
-    if (e.request.url.indexOf(dataUrl) > -1 || e.request.url.indexOf("socket.io/?EIO=") > -1) {
+    if (e.request.url.indexOf(dataUrl) > -1
+        || e.request.url.indexOf("socket.io/?EIO=") > -1
+        || e.request.url.indexOf("https://www.gstatic.com/") > -1) {
 
-        if (e.request.url.indexOf("socket.io/?EIO=")) {
+        if (e.request.url.indexOf("socket.io/?EIO=")
+            || e.request.url.indexOf("https://www.gstatic.com/")) {
             return;
         }
         return fetch(e.request)
