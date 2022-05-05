@@ -13,6 +13,7 @@
     "http-errors": "~1.6.3",
     "morgan": "~1.9.1",
     "socket.io": "^3.1.1",
-    "mongoose": "^6.2.4"
+    "mongoose": "^6.2.4",
+    "swagger-ui-express": "^4.3.0"
   }
 }
