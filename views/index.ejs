@@ -13,9 +13,9 @@
 </head>
 
 <body onload="init()">
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container-fluid">
-            <a class="navbar-brand">Navbar</a>
+            <a class="navbar-brand">SecretChat</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                 data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
                 aria-label="Toggle navigation">
@@ -26,64 +26,99 @@
                     <li class="nav-item">
                         <a class="nav-link " onclick="changePage('home')" href="#">Home</a>
                     </li>
-                    <!-- <li class="nav-item">
-                        <a class="nav-link" onclick="changePage('initial_form')" href="#">test</a>
-                    </li> -->
                 </ul>
-                <form class="d-flex">
-                    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-                    <button class="btn btn-outline-success" type="submit">Search</button>
-                </form>
+                <div class="d-flex">
+                    <input class="form-control me-2" type="search" id="searchkeyword" placeholder="Search"
+                        aria-label="Search">
+                    <button class="btn btn-light" id="searchStories" onclick="searchStories(event)"
+                        type="button">Search</button>
+                </div>
             </div>
         </div>
     </nav>
-    <!-- <div id="initial_form" class="container ">
-      
-        <p>Please insert the id of the Room you want to Join, if you do not have a room id, click Generate Room</p>
-        <form class="w-50" onsubmit="return false;">
-            <div>
-                <label for="name" class="form-label"> Your name </label>
-                <input type="text" class="form-control" id="name" name="name">
-            </div>
-            <div>
-                <label for="roomNo" class="form-label"> Your room </label>
-                <input type="text" class="form-control" id="roomNo" name="roomNo">
-                <button class="btn btn-primary btn-sm mt-2" id="roomNoGenerator" onclick="generateRoom()">Generate
-                    Room</button>
-            </div>
-            <div style=" width: 100%">
-                <label for="image_url" class="form-label"> Image (URL) </label>
-                <input type="text" class="form-control" id="image_url" name="image_url">
-            </div>
-            <button id="connect" class="btn btn-primary mt-2" onclick="connectToRoom()">Connect</button>
-        </form>
-    </div> -->
+
     <div id="home">
 
         <div class="p-3">
             <div class="row">
-                <div class="col-md-3 border border-1 rounded" style="height: 85vh;overflow-y: auto;overflow-x: clip;">
-                    <h3>Your rooms</h3>
-                    <ul class="list-group list-group-flush">
+                <div class="col-md-3 border border-1 rounded" style="height: 85vh; overflow-y: auto;overflow-x: clip;">
+                    <h3>Your history rooms</h3>
+                    <ul id="histories" class="list-group list-group-flush">
 
-                        <li class="list-group-item">
-                            <div class="card">
-                                <div class="card-header">
-                                    Room1
-                                </div>
-                                <div class="card-body">
-                                    <h5 class="card-title">title</h5>
-                                    <p class="card-text">xxxxx</p>
-                                </div>
-                            </div>
-                        </li>
+
                     </ul>
                 </div>
                 <div class="col-md-9">
                     <!-- Button trigger modal -->
-                    <button type="button" class="btn btn-primary" id="showNewStoryModal" onclick="showNewStoryModal()">
-                        New Story
-                    </button>
+                    <div class="d-flex justify-content-between">
+                        <button type="button" class="btn btn-primary" id="showNewStoryModal"
+                            onclick="showNewStoryModal()">
+                            New Story
+                        </button>
+                        <div class="d-flex align-items-center text-center">
+                            Order By
+                            <div class="d-flex align-items-center border-end p-1">
+                                <div class="me-3 d-flex align-items-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                        class="bi bi-calendar" viewBox="0 0 16 16">
+                                        <path
+                                            d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1z" />
+                                    </svg>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" onchange="searchStories()" checked type="radio"
+                                        name="inlineRadioOptions" id="orderByDateAsc">
+                                    <label class="form-check-label" for="orderByDate">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                            fill="currentColor" class="bi bi-arrow-up" viewBox="0 0 16 16">
+                                            <path fill-rule="evenodd"
+                                                d="M8 15a.5.5 0 0 0 .5-.5V2.707l3.146 3.147a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 1 0 .708.708L7.5 2.707V14.5a.5.5 0 0 0 .5.5z" />
+                                        </svg>
+                                    </label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" onchange="searchStories()" checked type="radio"
+                                        name="inlineRadioOptions" id="orderByDateDesc">
+                                    <label class="form-check-label" for="orderByDate"><svg
+                                            xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                            fill="currentColor" class="bi bi-arrow-down" viewBox="0 0 16 16">
+                                            <path fill-rule="evenodd"
+                                                d="M8 1a.5.5 0 0 1 .5.5v11.793l3.146-3.147a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 .708-.708L7.5 13.293V1.5A.5.5 0 0 1 8 1z" />
+                                        </svg></label>
+                                </div>
+                            </div>
+                            <div class="p-1 d-flex align-items-center px-2">
+                                <div class="me-3 ">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                        class="bi bi-person" viewBox="0 0 16 16">
+                                        <path
+                                            d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z" />
+                                    </svg>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" onchange="searchStories()" checked type="radio"
+                                        name="inlineRadioOptions" id="orderByAuthorAsc">
+                                    <label class="form-check-label" for="orderByDate">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                            fill="currentColor" class="bi bi-arrow-up" viewBox="0 0 16 16">
+                                            <path fill-rule="evenodd"
+                                                d="M8 15a.5.5 0 0 0 .5-.5V2.707l3.146 3.147a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 1 0 .708.708L7.5 2.707V14.5a.5.5 0 0 0 .5.5z" />
+                                        </svg>
+                                    </label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" onchange="searchStories()" checked type="radio"
+                                        name="inlineRadioOptions" id="orderByAuthorDesc">
+                                    <label class="form-check-label" for="orderByDate"><svg
+                                            xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                            fill="currentColor" class="bi bi-arrow-down" viewBox="0 0 16 16">
+                                            <path fill-rule="evenodd"
+                                                d="M8 1a.5.5 0 0 1 .5.5v11.793l3.146-3.147a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 .708-.708L7.5 13.293V1.5A.5.5 0 0 1 8 1z" />
+                                        </svg></label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     <!-- Modal -->
                     <div class="modal fade" id="newStory" tabindex="-1" aria-labelledby="newStoryLabel"
                         aria-hidden="true">
@@ -134,7 +169,6 @@
                                                     <input class="form-control form-control-sm" id="imageurl"
                                                         onchange="toDataURL()" placeholder="Url...">
                                                 </div>
-
                                             </div>
                                             <div class="tab-pane fade show active" id="imagetab" role="tabpanel"
                                                 aria-labelledby="image-tab">
@@ -199,20 +233,33 @@
             <div class="row">
                 <div class="col-md-7">
                     <div class="row border">
+
                         <div class="col-md-4 border">
                             <h1 id="story-title"></h1>
                             <p class="text-muted">Author by <span id="story-author"></span></p>
                             <p id="story-description"></p>
                         </div>
                         <div class="col-md-8">
-                            <div class="d-flex">
-                                <input type="color" id="color" class="form-control form-control-color" value="red"
-                                    title="Choose your color">
-                            </div>
-
-                            <div style="width: 100%; height: 45vh">
+                            <div style="width: 100%; height: 45vh;">
                                 <img id="image" class="img-thumbnail" style="height: 100%; max-width: 100%;">
                                 <canvas id="canvas"></canvas>
+                                <canvas id="bg-canvas"></canvas>
+                            </div>
+                            <div class="d-flex">
+                                <input type="color" id="color" class="form-control form-control-color border-0"
+                                    value="#F5160C" title="Choose your color">
+                                <button class="btn btn-sm" onclick="drawMode(true)"><svg
+                                        xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                        class="bi bi-pencil" viewBox="0 0 16 16">
+                                        <path
+                                            d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z" />
+                                    </svg></button>
+                                <button class="btn btn-sm" onclick="drawMode(false)"><svg
+                                        xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                        class="bi bi-eraser" viewBox="0 0 16 16">
+                                        <path
+                                            d="M8.086 2.207a2 2 0 0 1 2.828 0l3.879 3.879a2 2 0 0 1 0 2.828l-5.5 5.5A2 2 0 0 1 7.879 15H5.12a2 2 0 0 1-1.414-.586l-2.5-2.5a2 2 0 0 1 0-2.828l6.879-6.879zm2.121.707a1 1 0 0 0-1.414 0L4.16 7.547l5.293 5.293 4.633-4.633a1 1 0 0 0 0-1.414l-3.879-3.879zM8.746 13.547 3.453 8.254 1.914 9.793a1 1 0 0 0 0 1.414l2.5 2.5a1 1 0 0 0 .707.293H7.88a1 1 0 0 0 .707-.293l.16-.16z" />
+                                    </svg></button>
                             </div>
                         </div>
                     </div>
@@ -220,10 +267,24 @@
                         <div class="row" id="typeForm">
                             <div class="col-6">
                                 <select class="form-select" id="myType" onchange="widgetInit()">
-                                    <option selected>Select Type</option>
-                                    <option value="1">One</option>
-                                    <option value="2">Two</option>
-                                    <option value="3">Three</option>
+                                    <option value="all">All</option>
+                                    <option value="book">Book</option>
+                                    <option value="EducationalOrganization">EducationalOrganization</option>
+                                    <option value="Event">Event</option>
+                                    <option value="GovernmentOrganization">GovernmentOrganization</option>
+                                    <option value="Movie">Movie</option>
+                                    <option value="MusicRecording">MusicRecording</option>
+                                    <option value="Organization">Organization</option>
+                                    <option value="Periodical">Periodical</option>
+                                    <option value="Person">Person</option>
+                                    <option value="Place">Place</option>
+                                    <option value="SportsTeam">SportsTeam</option>
+                                    <option value="TVEpisode">TVEpisode</option>
+                                    <option value="TVSeries">TVSeries</option>
+                                    <option value="VideoGame">VideoGame</option>
+                                    <option value="VideoGameSeries">VideoGameSeries</option>
+                                    <option value="WebSite">WebSite</option>
+
                                 </select>
                             </div>
                             <div class="col-6" id='widget'>
@@ -242,7 +303,7 @@
                     <div id="in_room" style="display: inline"></div>
                     <div id="history" style="height: 80vh" class="boxed scrolling mt-2"></div>
                     <div id="input" class=" boxed">
-                        <div class="input-group mb-3">
+                        <div class="input-group input-group-sm mb-3">
                             <input type="text" id="chat_input" name="chat_input" class="form-control"
                                 placeholder="Enter message" aria-label="Recipient's username"
                                 aria-describedby="button-addon2">
@@ -253,11 +314,13 @@
                 </div>
             </div>
         </div>
-        <!-- <button class="canvas-clear btn btn-sm btn-danger">Clear</button> -->
-        <!--    </div>-->
-
     </div>
-    <div class="offline_div" id="offline_div" style="display: none">You are offline</div>
+    <div class="offline_div" id="offline_div"
+        style="position: fixed; bottom: 0; width: 200px;margin: 0 auto; display: none">
+        <div class="alert alert-info" role="alert">
+            Your are offline.
+        </div>
+    </div>
     <script type="text/javascript" src="https://www.gstatic.com/knowledge/kgsearch/widget/1.0/widget.min.js"></script>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
