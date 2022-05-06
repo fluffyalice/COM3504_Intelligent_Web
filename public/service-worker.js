@@ -130,30 +130,5 @@ self.addEventListener('fetch', function(e) {
                 return err
             });
         }));
-        // }
-        // e.respondWith(
-        //     caches.match(e.request)
-        //         .then(function(response) {
-
-        //             return response
-        //                 || fetch(e.request)
-        //                     .then(function(response) {
-        //                         // note if network error happens, fetch does not return
-        //                         // an error. it just returns response not ok
-        //                         // https://www.tjvantoll.com/2015/09/13/fetch-and-errors/
-        //                         if (!response.ok) {
-        //                             console.log("error: " + response.error());
-        //                         }
-        //                     })
-        //                     .catch(function(err) {
-        //                         console.log("error: " + err);
-        //                         return err
-        //                     })
-        //         })
-        //         .catch(function(err) {
-        //             console.log("error: " + err);
-        //             return err
-        //         })
-        // );
     }
 });
