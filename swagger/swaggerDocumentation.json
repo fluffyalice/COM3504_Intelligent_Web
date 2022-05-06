@@ -1,0 +1,164 @@
+{
+  "openapi": "3.0.2",
+  "info": {
+    "version": "1.0.0",
+    "title": "exercise solution",
+    "description": "the solution",
+    "termsOfService": "http://api_url/terms/",
+    "contact": {
+      "name": "COM3504/6504",
+      "email": "f.ciravegna@shef.ac.uk",
+      "url": "http://shef.ac.uk"
+    },
+    "license": {
+      "name": "Apache 2.0",
+      "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000/",
+      "description": "the only Local server"
+    }
+  ],
+  "paths": {
+    "/api/stories": {
+      "post": {
+        "tags": [
+          "save story data"
+        ],
+        "description": "save story data to database",
+        "operationId": "save story data",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/story"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Correct input of Child structure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/story"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing parameters or bad input format",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "message": "no image provided",
+                  "internal_code": "missing_parameters"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "get stories data"
+        ],
+        "requestBody": {},
+        "responses": {
+          "200": {
+            "description": "a list of stories",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/stories"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "stories": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/responseStory"
+        }
+      },
+      "responseStory": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "image": {
+            "type": "string",
+            "format": "base64"
+          },
+          "author": {
+            "type": "string"
+          },
+          "date": {
+            "type": "string",
+            "format": "YYYY-MM-DD"
+          }
+        }
+      },
+      "story": {
+        "type": "object",
+        "properties": {
+          "image": {
+            "type": "string",
+            "description": "Base64 encoded image"
+          },
+          "title": {
+            "type": "string",
+            "description": "Title of the story",
+            "example": "Test"
+          },
+          "description": {
+            "type": "string",
+            "description": "Description of the story",
+            "example": "Test"
+          },
+          "author": {
+            "type": "string",
+            "description": "Author of the story",
+            "example": "Test"
+          },
+          "date": {
+            "type": "string",
+            "description": "Date of the story",
+            "example": "Test"
+          }
+        }
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          },
+          "internal_code": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}
