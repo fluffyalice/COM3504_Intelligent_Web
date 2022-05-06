@@ -1,79 +1,84 @@
 body {
-    font: 12px "Lucida Grande", Helvetica, Arial, sans-serif;
+  font: 12px "Lucida Grande", Helvetica, Arial, sans-serif;
 }
-  
+
 a {
-    color: #00B7FF;
+  color: #00B7FF;
 }
-  
+
 .boxed {
-    width: 100%;
-    padding:10px;
+  width: 100%;
+  padding:10px;
 }
 .bottom {
-    position: absolute;
-    bottom: 10px;
-    width: 90%;
+  position: absolute;
+  bottom: 10px;
+  width: 90%;
 }
 .scrolling {
-      overflow-y: scroll;
-      /* max-height: 90vh; */
+    overflow-y: scroll;
+    /* max-height: 90vh; */
 }
 .outsideWrapper{
-      width:256px; height:256px;
-      margin:20px 60px;
-      border:1px solid blue;}
+    width:256px; height:256px;
+    margin:20px 60px;
+    border:1px solid blue;}
 .insideWrapper{
-      width:100%; height:100%;
-      position:relative;}
+    width:100%; height:100%;
+    position:relative;}
 .coveredImage{
-      width:100%; height:100%;
-      position:absolute; top:0px; left:0px;
+    width:100%; height:100%;
+    position:absolute; top:0px; left:0px;
 }
 .coveringCanvas{
-      width:100%; height:100%;
-      position:absolute; top:0px; left:0px;
-      background-color: rgba(255,0,0,.1);
+    width:100%; height:100%;
+    position:absolute; top:0px; left:0px;
+    background-color: rgba(255,0,0,.1);
 }
-  
+
 .hidden{
-    display: none;
+  display: none;
 }
-  
+
 a {
-    color: #00B7FF;
+  color: #00B7FF;
 }
-  
+
 .kge-search-picker {
-      width: 50px;
-}
-  
+    width: 50px;
+  }
+
 .myRow {
-    display:inline-block;
+  display:inline-block;
 }
-  
-  
+
+
 .resultPanel{
-    border: dotted gray 1px;
-    padding:10px
+  border: dotted gray 1px;
+  padding:10px
 }
-  
+
 .ellipsis{
-    display: -webkit-box;
-    width: 100%;
-    -webkit-line-clamp: 1;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
+  display: -webkit-box;
+  width: 100%;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
-  
+
 .cover{
-    width: 200px; /* You can set the dimensions to whatever you want */
-    height: 200px;
-    object-fit: cover;
+  width: 200px; /* You can set the dimensions to whatever you want */
+  height: 200px;
+  object-fit: cover;
 }
-  
+
 #bg-canvas {
-    position: absolute;
-    left: 0;
-    z-index: -1;
+  position: absolute;
+  left: 0;
+  z-index: -1;
+}
+
+#story-description{
+    height: 40vh;
+    overflow-y: scroll;
 }
