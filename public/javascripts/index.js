@@ -79,7 +79,7 @@ function initChatSocket() {
             hideHomeInterface(room, userId);
         } else {
             // notifies that someone has joined the room
-            writeOnHistory('<b>' + userId + '</b>' + ' joined room ' + (room.split('-')[1]));
+            writeOnHistory('<b>' + userId + '</b>' + ' joined room ' + room);
         }
     });
     // called when a message is received

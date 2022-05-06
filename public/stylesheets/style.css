@@ -79,6 +79,6 @@ a {
 }
 
 #story-description{
-    height: 40vh;
+    height:50vh;
     overflow-y: scroll;
 }
