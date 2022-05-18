@@ -79,7 +79,7 @@ function initChatSocket() {
             hideHomeInterface(room, userId);
         } else {
             // notifies that someone has joined the room
-            writeOnHistory('<b>' + userId + '</b>' + ' joined room ' + room);
+            writeOnHistory('<b>' + userId + '</b>' + ' joined room ' + (room.split('-')[1]));
         }
     });
     // called when a message is received
@@ -268,45 +268,39 @@ function hideHomeInterface(room, userId) {
  * @param data the data to send (e.g. a Javascript structure)
  */
 function sendAjaxQuery(url, data, success, error) {
-    $.ajax({
-        url: url,
-        data: JSON.stringify(data),
-        contentType: 'application/json',
-        dataType: 'json',
-        type: 'POST',
-        success,
-        error
-    });
+    axios.post(url, data)
+        .then(response => {
+            // const users = response.data.data;
+            // console.log(`GET list users`, users);
+            success(response.data)
+        })
+        .catch(err => error(err));
+
 }
 
 /**
  * loads the story data from the server if online mode
  * otherwise it loads the data from the cache
- * @param {*} forceReload 
+ * @param {*} forceReload
  */
 async function loadStoryData(forceReload) {
     if (forceReload) {
-        $.ajax({
-            url: '/api/stories',
-            contentType: 'application/json',
-            dataType: 'json',
-            type: 'GET',
-            success: (dataR) => {
+        axios.get('/api/stories')
+            .then((response) => {
+                dataR = response.data
                 // console.log(dataR)
                 for (let item of dataR) {
                     storeCachedData('story', { ...item, saved: 1 })
                     addToResults(item)
                 }
-            },
-            error: () => {
-                getAllCachedData().then(stories => {
-                    // console.log(data)
-                    for (let story of stories) {
-                        addToResults(story)
-                    }
-                })
-            }
-        });
+            }).catch(err => {
+            getAllCachedData().then(stories => {
+                // console.log(data)
+                for (let story of stories) {
+                    addToResults(story)
+                }
+            })
+        })
     }
 }
 
@@ -351,13 +345,13 @@ function hideOfflineWarning() {
  * it adds a row of weather forecasts to the results div
  * @param dataR the data returned by the server:
  * class Story{
-  *  constructor (title, text, photo, date) {
-  *    this.title= title;
-  *    this.text= text,
-  *    this.photo=photo;
-  *    this.date= date;
-  *  }
-  *}
+ *  constructor (title, text, photo, date) {
+ *    this.title= title;
+ *    this.text= text,
+ *    this.photo=photo;
+ *    this.date= date;
+ *  }
+ *}
  */
 function addToResults(dataR) {
     if (document.getElementById('stories') != null) {
@@ -404,7 +398,7 @@ function toDataURL() {
 
 /**
  * convert the input file to a base64 string
- * @param {*} element 
+ * @param {*} element
  */
 function encodeImageFileAsURL(element) {
 
