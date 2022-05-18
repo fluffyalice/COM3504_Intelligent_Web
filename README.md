@@ -24,7 +24,7 @@ It is a system used to help a unit of secret agents that can be used to share re
 4. Insert the image by adding a URL or loading from a local computer.
 5. Click the **Save button** to save the story.
 
-![new_story](COM_3504_Intelligent_Web/new_story.png)
+![new_story](new_story.png)
 
 ​																			Figure1. Add new story
 
@@ -38,7 +38,7 @@ It is a system used to help a unit of secret agents that can be used to share re
 4. All stories can be ordered by **author name** or **date of creation**.
 5. After clicking the **search button**, the results will appear in the Home page.
 
-![home](COM_3504_Intelligent_Web/home.png)																			Figure2. Home page
+![home](home.png)																			Figure2. Home page
 
 
 
@@ -48,7 +48,7 @@ It is a system used to help a unit of secret agents that can be used to share re
 2. Fill in your **name** and the room number or click the **Generate Room button** to randomly generate the room number.
 3. Click the **Connect button** to redirect to the chat page.
 
-![new_room](COM_3504_Intelligent_Web/new_room.png)                                                                        
+![new_room](new_room.png)                                                                        
 
 ​                                                                          Figure3. Join room
 
@@ -69,7 +69,7 @@ It is a system used to help a unit of secret agents that can be used to share re
 3. Click the **Send button**.
 4. Start a chating journey.
 
-![chat](COM_3504_Intelligent_Web/chat.png)
+![chat](chat.png)
 
 ​                                                                           Figure4. Chat room
 
