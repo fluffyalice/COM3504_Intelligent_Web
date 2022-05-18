@@ -30,7 +30,7 @@ It is a system used to help a unit of secret agents that can be used to share re
 
    
 
-![new_story](new_story.png)
+![new_story](readme_images/new_story.png)
 
 ​																			Figure1. Add new story
 
@@ -52,7 +52,7 @@ It is a system used to help a unit of secret agents that can be used to share re
 
    
 
-![home](home.png)																			Figure2. Home page
+![home](readme_images/home.png)																			Figure2. Home page
 
 
 
@@ -64,7 +64,7 @@ It is a system used to help a unit of secret agents that can be used to share re
 2. Fill in your **name** and the room number or click the **Generate Room button** to randomly generate the room number.
 3. Click the **Connect button** to redirect to the chat page.
 
-![new_room](new_room.png)                                                                        
+![new_room](readme_images/new_room.png)                                                                        
 
 ​                                                                          Figure3. Join room
 
@@ -92,7 +92,7 @@ It is a system used to help a unit of secret agents that can be used to share re
 
    
 
-![chat](chat.png)
+![chat](readme_images/chat.png)
 
 ​                                                                           Figure4. Chat room
 
