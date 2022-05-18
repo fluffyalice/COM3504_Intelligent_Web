@@ -18,7 +18,7 @@ It is a system used to help a unit of secret agents that can be used to share re
 
 ## New story
 
-1. Click the **Home button** on the Navbar.
+1. Click the **Home button** on the Navbar. 
 
 2. Click the **New Story button** to write a new story.
 
